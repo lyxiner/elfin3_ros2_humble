@@ -1,103 +1,107 @@
 #!/usr/bin/python3
 
+# elfin3_gazebo.launch.py (ROS2 Humble)
+#
+# Migration + bug-fix summary:
+#   - `ros2 control load_start_controller` was removed in Humble.
+#     Use Node + spawner executable instead.
+#   - 'joint_state_controller' -> 'joint_state_broadcaster' (controller NAME).
+#   - The original passed 'joint_trajectory_controller' as the controller name
+#     for the second spawner, but that is the TYPE; the actual controller name
+#     defined in elfin_arm_controller.yaml is 'elfin_arm_controller'.
+#   - The original never added the controller-loading actions to the returned
+#     LaunchDescription, so Gazebo came up with no controllers at all. Fixed.
+#   - Wait for the entity to be spawned before starting controllers
+#     (controller_manager only exists once gazebo_ros2_control plugin loads,
+#     which happens after spawn_entity finishes).
 
-# elfin3_gazebo.launch.py:
-# Launch file for the elfin3 Robot GAZEBO SIMULATION in ROS2 Foxy:
-
-# Import libraries:
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler
+from launch_ros.parameter_descriptions import ParameterValue
+from launch.actions import (
+    IncludeLaunchDescription, RegisterEventHandler,
+)
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
-import xacro
-import yaml
+from launch.substitutions import Command, FindExecutable
 
-# LOAD FILE:
-def load_file(package_name, file_path):
-    package_path = get_package_share_directory(package_name)
-    absolute_file_path = os.path.join(package_path, file_path)
-    try:
-        with open(absolute_file_path, 'r') as file:
-            return file.read()
-    except EnvironmentError:
-        # parent of IOError, OSError *and* WindowsError where available.
-        return None
-# LOAD YAML:
-def load_yaml(package_name, file_path):
-    package_path = get_package_share_directory(package_name)
-    absolute_file_path = os.path.join(package_path, file_path)
-    try:
-        with open(absolute_file_path, 'r') as file:
-            return yaml.safe_load(file)
-    except EnvironmentError:
-        # parent of IOError, OSError *and* WindowsError where available.
-        return None
 
-# ========== **GENERATE LAUNCH DESCRIPTION** ========== #
 def generate_launch_description():
-    
-    # ***** GAZEBO ***** #   
-    # DECLARE Gazebo WORLD file:
-    elfin3_ros2_gazebo = os.path.join(
+
+    # Gazebo classic
+    world_path = os.path.join(
         get_package_share_directory('elfin3_ros2_gazebo'),
-        'worlds',
-        'elfin3.world')
-    # DECLARE Gazebo LAUNCH file:
+        'worlds', 'elfin3.world')
     gazebo = IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([os.path.join(
-                    get_package_share_directory('gazebo_ros'), 'launch'), '/gazebo.launch.py']),
-                launch_arguments={'world': elfin3_ros2_gazebo}.items(),
-             )
+        PythonLaunchDescriptionSource(
+            [os.path.join(get_package_share_directory('gazebo_ros'),
+                          'launch'), '/gazebo.launch.py']),
+        launch_arguments={'world': world_path}.items(),
+    )
 
-    # ***** ROBOT DESCRIPTION ***** #
-    # elfin3 Description file package:
-    elfin3_description_path = os.path.join(
-        get_package_share_directory('elfin3_ros2_gazebo'))
-    # elfin3 ROBOT urdf file path:
-    xacro_file = os.path.join(elfin3_description_path,
-                              'urdf',
-                              'elfin3.urdf.xacro')
-    # Generate ROBOT_DESCRIPTION for elfin3:
-    robot_description_config = Command(
-        [FindExecutable(name='xacro'), ' ', xacro_file,
-        ' use_fake_hardware:=false',
-        ' use_real_hardware:=false',])
-        
-    robot_description = {'robot_description': robot_description_config}
+    # robot_description from xacro
+    xacro_file = os.path.join(
+        get_package_share_directory('elfin3_ros2_gazebo'),
+        'urdf', 'elfin3.urdf.xacro')
+    robot_description = {
+        'robot_description': ParameterValue(
+            Command([
+                FindExecutable(name='xacro'), ' ', xacro_file,
+                ' use_fake_hardware:=false',
+                ' use_real_hardware:=false',
+            ]),
+            value_type=str,
+        )
+    }
 
-    # ROBOT STATE PUBLISHER NODE:
-    node_robot_state_publisher = Node(
+    robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
         output='screen',
-        parameters=[robot_description]
+        parameters=[robot_description],
     )
 
-    # SPAWN ROBOT TO GAZEBO:
-    spawn_entity = Node(package='gazebo_ros', executable='spawn_entity.py',
-                        arguments=['-topic', 'robot_description',
-                                   '-entity', 'elfin3',"-x", "0.0", "-y", "0.0", "-z", "0.1"],
-                        output='screen')
-
-    # ***** CONTROLLERS ***** #
-    # Joint STATE Controller:
-    load_joint_state_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_start_controller', 'joint_state_controller'],
-        output='screen'
-    )
-    # Joint TRAJECTORY Controller:
-    load_joint_trajectory_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_start_controller', 'joint_trajectory_controller'],
-        output='screen'
+    spawn_entity = Node(
+        package='gazebo_ros',
+        executable='spawn_entity.py',
+        arguments=['-topic', 'robot_description',
+                   '-entity', 'elfin3',
+                   '-x', '0.0', '-y', '0.0', '-z', '0.1'],
+        output='screen',
     )
 
-    # ***** RETURN LAUNCH DESCRIPTION ***** #
+    # Controller spawners (Humble: use Node + spawner executable, by NAME)
+    load_joint_state_broadcaster = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['joint_state_broadcaster',
+                   '--controller-manager', '/controller_manager'],
+        output='screen',
+    )
+    load_elfin_arm_controller = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['elfin_arm_controller',
+                   '--controller-manager', '/controller_manager'],
+        output='screen',
+    )
+
     return LaunchDescription([
-        gazebo, 
-        node_robot_state_publisher,
-        spawn_entity
+        gazebo,
+        robot_state_publisher,
+        spawn_entity,
+
+        # Only spawn controllers after the entity (and therefore the
+        # gazebo_ros2_control plugin + controller_manager) is alive.
+        RegisterEventHandler(
+            OnProcessExit(
+                target_action=spawn_entity,
+                on_exit=[
+                    load_joint_state_broadcaster,
+                    load_elfin_arm_controller,
+                ],
+            )
+        ),
     ])

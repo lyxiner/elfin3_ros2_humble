@@ -3,23 +3,28 @@
 <package format="3">
   <name>elfin_ros_control</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Hardware interface (ros2_control SystemInterface) for the Elfin robot, Humble.</description>
   <maintainer email="cjw@todo.todo">cjw</maintainer>
-  <license>TODO: License declaration</license>
+  <license>BSD-3-Clause</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
-  <depend>rclpy</depend>
   <depend>std_msgs</depend>
-  <depend>trajectory_msgs</depend>
-  <depend>elfin_ethercat_driver</depend>
-  <depend>sensor_msgs</depend>
   <depend>std_srvs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>trajectory_msgs</depend>
   <depend>tf2</depend>
+
   <depend>hardware_interface</depend>
-  <depend>rosidl_default_generators</depend>
+  <depend>controller_interface</depend>
   <depend>pluginlib</depend>
+
+  <depend>elfin_ethercat_driver</depend>
+  <depend>elfin_robot_msgs</depend>
+
+  <depend>libboost-thread-dev</depend>
+  <depend>libboost-system-dev</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

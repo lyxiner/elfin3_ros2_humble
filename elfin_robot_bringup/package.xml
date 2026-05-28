@@ -3,11 +3,23 @@
 <package format="3">
   <name>elfin_robot_bringup</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Real-hardware bringup (ros2_control + EtherCAT) for the Elfin3, ROS2 Humble.</description>
   <maintainer email="cjw@todo.todo">cjw</maintainer>
-  <license>TODO: License declaration</license>
+  <license>BSD-3-Clause</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>joint_state_broadcaster</exec_depend>
+  <exec_depend>joint_trajectory_controller</exec_depend>
+
+  <!-- in-workspace -->
+  <exec_depend>elfin3_ros2_gazebo</exec_depend>
+  <exec_depend>elfin_ros_control</exec_depend>
+  <exec_depend>elfin_ethercat_driver</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

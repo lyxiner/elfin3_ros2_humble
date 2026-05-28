@@ -1,37 +1,27 @@
+# Humble migration:
+#   joint_state_controller -> joint_state_broadcaster
+#   Removed `write_op_modes` (Foxy-only field, gone in Humble JTC)
+#   Removed `publish_rate` from controller_manager.elfin_arm_controller block
+#     (was misplaced; the JTC publish rate is `state_publish_rate` below).
 controller_manager:
   ros__parameters:
     update_rate: 100
 
     elfin_arm_controller:
       type: joint_trajectory_controller/JointTrajectoryController
-      joints:
-        - elfin_joint1
-        - elfin_joint2
-        - elfin_joint3
-        - elfin_joint4
-        - elfin_joint5
-        - elfin_joint6
-      publish_rate: 50
-      write_op_modes:
-        - elfin_joint1
-        - elfin_joint2
-        - elfin_joint3
-        - elfin_joint4
-        - elfin_joint5
-        - elfin_joint6
 
-    joint_state_controller:
-      type: joint_state_controller/JointStateController
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
 
 elfin_arm_controller:
   ros__parameters:
     joints:
-     - elfin_joint1
-     - elfin_joint2
-     - elfin_joint3
-     - elfin_joint4
-     - elfin_joint5
-     - elfin_joint6
+      - elfin_joint1
+      - elfin_joint2
+      - elfin_joint3
+      - elfin_joint4
+      - elfin_joint5
+      - elfin_joint6
     command_interfaces:
       - position
     state_interfaces:

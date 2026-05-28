@@ -1,14 +1,19 @@
 <?xml version="1.0"?>
-
+<!--
+  ROS2 Humble migration:
+    Removed <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    tags. These were used by gazebo_ros_control in ROS1; gazebo_ros2_control
+    instead reads everything from the <ros2_control> block in elfin3_gazebo.xacro.
+    The <transmission> blocks themselves are kept (and stripped down) because
+    some downstream tools still parse them; they are otherwise a no-op.
+-->
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
 
-  <xacro:macro name="elfin3_transmission" >
+  <xacro:macro name="elfin3_transmission">
 
-     <transmission name="elfin_joint1_trans">
+    <transmission name="elfin_joint1_trans">
       <type>transmission_interface/SimpleTransmission</type>
-      <joint name="elfin_joint1">
-        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-      </joint>
+      <joint name="elfin_joint1"/>
       <actuator name="elfin_joint1_motor">
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
@@ -16,49 +21,39 @@
 
     <transmission name="elfin_joint2_trans">
       <type>transmission_interface/SimpleTransmission</type>
-      <joint name="elfin_joint2">
-        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-      </joint>
+      <joint name="elfin_joint2"/>
       <actuator name="elfin_joint2_motor">
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
     </transmission>
-    
+
     <transmission name="elfin_joint3_trans">
       <type>transmission_interface/SimpleTransmission</type>
-      <joint name="elfin_joint3">
-        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-      </joint>
+      <joint name="elfin_joint3"/>
       <actuator name="elfin_joint3_motor">
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
     </transmission>
-    
+
     <transmission name="elfin_joint4_trans">
       <type>transmission_interface/SimpleTransmission</type>
-      <joint name="elfin_joint4">
-        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-      </joint>
+      <joint name="elfin_joint4"/>
       <actuator name="elfin_joint4_motor">
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
     </transmission>
-    
+
     <transmission name="elfin_joint5_trans">
       <type>transmission_interface/SimpleTransmission</type>
-      <joint name="elfin_joint5">
-        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-      </joint>
+      <joint name="elfin_joint5"/>
       <actuator name="elfin_joint5_motor">
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
     </transmission>
-    
+
     <transmission name="elfin_joint6_trans">
       <type>transmission_interface/SimpleTransmission</type>
-      <joint name="elfin_joint6">
-        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-      </joint>
+      <joint name="elfin_joint6"/>
       <actuator name="elfin_joint6_motor">
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>

@@ -69,7 +69,7 @@ class ElfinTeleopAPI
 {
 public:
     ElfinTeleopAPI(const rclcpp::Node::SharedPtr& node,moveit::planning_interface::MoveGroupInterfacePtr& group, std::string action_name, planning_scene_monitor::PlanningSceneMonitorPtr& planning_scene_monitor);
-    
+
     // void teleopJointCmdNoLimitCB(const std_msgs::Int64ConstPtr &msg);
     void teleopJointCmdNoLimitCB(const std_msgs::msg::Int64::SharedPtr msg);
     // void teleopJointCmdCB(const std_msgs::Int64ConstPtr &msg);
@@ -102,7 +102,7 @@ private:
     rclcpp::Node::SharedPtr root_nh_;
     rclcpp::Node::SharedPtr teleop_nh_;
     // std::shared_ptr<rclcpp::Node> teleop_nh_,root_nh_;
-    
+
     // actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> action_client_;
     // rclcpp_action::ServerGoalHandle<control_msgs::action::FollowJointTrajectory> action_client_;
     // std::shared_ptr<control_msgs::action::FollowJointTrajectory> action_client_;

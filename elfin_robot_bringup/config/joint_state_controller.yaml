@@ -1,3 +1,6 @@
-joint_state_controller:
-    type: joint_state_controller/JointStateController
-    publish_rate: 50  
+# Humble: renamed from joint_state_controller to joint_state_broadcaster.
+# The file is also renamed; if you want to keep the old filename for
+# backward-compatible launch references, that is fine - only the contents matter.
+joint_state_broadcaster:
+  ros__parameters:
+    publish_rate: 50

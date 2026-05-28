@@ -1,2 +1,6 @@
-list(APPEND @PROJECT_NAME@_INCLUDE_DIRS "${@PROJECT_NAME@_PREFIX}/@CATKIN_GLOBAL_INCLUDE_DESTINATION@/soem")
-list(APPEND @PROJECT_NAME@_INCLUDE_DIRS "${@PROJECT_NAME@_PREFIX}/@CATKIN_GLOBAL_INCLUDE_DESTINATION@")
+# Provide additional include search paths so that downstream code can write
+# either `#include <soem_ros2/ethercattype.h>` (preferred) or `#include <ethercattype.h>`.
+# In Foxy this file used @CATKIN_GLOBAL_INCLUDE_DESTINATION@ which is a catkin
+# variable that does not exist under ament, leaving the paths broken.
+list(APPEND @PROJECT_NAME@_INCLUDE_DIRS "${@PROJECT_NAME@_PREFIX}/include/soem_ros2")
+list(APPEND @PROJECT_NAME@_INCLUDE_DIRS "${@PROJECT_NAME@_PREFIX}/include")

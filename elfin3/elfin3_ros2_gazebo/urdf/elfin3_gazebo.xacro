@@ -1,10 +1,14 @@
 <?xml version="1.0"?>
-
+<!--
+  ROS2 Humble migration:
+    - fake_components/GenericSystem -> mock_components/GenericSystem
+      (fake_components was renamed in Humble; the old name is gone)
+-->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <xacro:macro name="elfin3_gazebo" 
-    params="use_fake_hardware:=false 
-    use_real_hardware:=true">
+  <xacro:macro name="elfin3_gazebo"
+    params="use_fake_hardware:=false
+            use_real_hardware:=true">
 
     <gazebo>
       <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
@@ -12,7 +16,7 @@
         <parameters>$(find elfin3_ros2_gazebo)/config/elfin_arm_controller.yaml</parameters>
       </plugin>
     </gazebo>
-    
+
     <ros2_control name="GazeboSystem" type="system">
 
       <hardware>
@@ -22,7 +26,8 @@
 
         <xacro:unless value="${use_real_hardware}">
           <xacro:if value="${use_fake_hardware}">
-              <plugin>fake_components/GenericSystem</plugin>
+            <!-- Humble: fake_components -> mock_components -->
+            <plugin>mock_components/GenericSystem</plugin>
           </xacro:if>
 
           <xacro:unless value="${use_fake_hardware}">
@@ -30,7 +35,6 @@
           </xacro:unless>
         </xacro:unless>
       </hardware>
-      
 
       <joint name="elfin_joint1">
         <command_interface name="position">
@@ -107,27 +111,27 @@
 
     </ros2_control>
 
- <gazebo reference="elfin_link2">
-    <visual name='visual'>
-     <material>
-       <script>
-         <uri>file://media/materials/scripts/gazebo.material</uri>
-         <name>Gazebo/Grey</name>
-       </script>
-     </material>
-    </visual>
-  </gazebo>
+    <gazebo reference="elfin_link2">
+      <visual name='visual'>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Grey</name>
+          </script>
+        </material>
+      </visual>
+    </gazebo>
 
-  <gazebo reference="elfin_link4">
-    <visual name='visual'>
-     <material>
-       <script>
-         <uri>file://media/materials/scripts/gazebo.material</uri>
-         <name>Gazebo/Grey</name>
-       </script>
-     </material>
-    </visual>
-  </gazebo>
+    <gazebo reference="elfin_link4">
+      <visual name='visual'>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Grey</name>
+          </script>
+        </material>
+      </visual>
+    </gazebo>
 
   </xacro:macro>
 
